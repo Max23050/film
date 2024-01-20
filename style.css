@@ -1,0 +1,123 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    padding: 20px;
+    text-align: center; 
+    background-color: #333;
+    color: white;
+}
+
+.content {
+    padding: 20px;
+}
+
+form {
+    margin-top: 15px;
+}
+
+.options label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.options input[type="radio"] {
+    margin-right: 10px;
+}
+
+.options span {
+    font-size: 0.8em;
+    color: #888;
+}
+
+.input-field {
+    margin: 10px 0;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.checkbox input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.submit-block {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #d6d6d6;
+    height: 50px;
+}
+
+.button {
+    background-color: #222;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    display: block;
+    width: 100px;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 15px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+    background-color: #398fe5;
+    transform: scale(1.05);
+}
+
+.button:active {
+    background-color: #0e4276; 
+    transform: scale(0.95);
+    transition: background-color 0.1s ease;
+}
+
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.4); 
+    animation-name: fadeIn;
+    animation-duration: 0.4s;
+}
+
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
+    animation-name: slideIn;
+    animation-duration: 0.5s;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+/* Анимация появления содержимого */
+@keyframes slideIn {
+    from {top: -300px; opacity: 0;}
+    to {top: 0; opacity: 1;}
+}
+
+/* Анимация исчезновения содержимого */
+@keyframes slideOut {
+    from {top: 0; opacity: 1;}
+    to {top: -300px; opacity: 0;}
+}
