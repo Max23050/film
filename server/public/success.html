@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h3>Success</h3>
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzn2mK5afVBcICVFjKCD1UMtmJ2v4HnGjt39y7i-7BkxcyjOoKe1UzFU8Pl2U_pYY-eKA/exec'
+        document.addEventListener('DOMContentLoaded', function() {
+            const formDataJson = localStorage.getItem('formData');
+            const formData = new FormData();
+
+            if (formDataJson) {
+                const data = JSON.parse(formDataJson);
+
+                for (const key in data) {
+                    formData.append(key, data[key]);
+                }
+
+                sendFormData(formData);
+
+                localStorage.removeItem('formData');
+            }
+        });
+
+        function sendFormData(formData) {
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(response => {
+                    // Отображение модального окна и т.д.
+                })
+                .catch(error => console.error('Error!', error.message));
+        }
+    </script>
+</body>
+</html>

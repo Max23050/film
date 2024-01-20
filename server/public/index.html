@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>AMY LOVES FILM</h1>
+    </div>
+    <div class="content">
+        <a href="#">Zpět</a>
+        <form action="#" id="film-form" name="submit-to-google-sheet">
+            <div class="options">
+                <label><input type="radio" name="negatives" value="none" data-price="0" data-requires-address="false" checked> Negativy nepotřebuji <span>Nejčastější volba</span></label>
+                <label><input type="radio" name="negatives" value="with_order" data-price="0" data-requires-address="false"> Zašlete mi negativy s mojí další objednávkou</label>
+                <label><input type="radio" name="negatives" value="pickup" data-price="15" data-requires-address="false"> Vyzvednu si je v Acid coffe v Praze <span class="additional-cost">+ 15 Kč</span></label>
+                <label><input type="radio" name="negatives" value="mail" data-price="35" data-requires-address="true"> Pošlete mi je samostatně do schránky <span class="additional-cost">+ 35 Kč</span></label>
+            </div>
+
+            <div id="address-field" class="hidden">
+                <input type="text" class="input-field" name="address" placeholder="Adresa pro doručení">
+            </div>
+
+            <input type="text" class="input-field" name="film_number" placeholder="Číslo filmu" required>
+            <input type="email" class="input-field" name="email" placeholder="Tvůj email" required>
+
+            <div class="checkbox">
+                <label><input type="checkbox" name="offers" required> Souhlasím se zasíláním super nabídek a s obchodními podmínkami</label>
+            </div>
+
+            <div class="submit-block">
+                <div class="price"><span id="total-price">239 Kč</span></div>
+                <button type="submit" class="button">Zaplatit</button>
+            </div>
+        </form>
+
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <p>Vaše data byla úspěšně odeslána!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const basePrice = 239;
+        const totalPriceElement = document.querySelector('#total-price')
+        const radioButtons = document.querySelectorAll('input[type="radio"][name="negatives"]')
+        const addressField = document.querySelector('#address-field')
+
+
+        function updatePrice() {
+            let additionalPrice = 0
+            radioButtons.forEach(function(radio) {
+                if (radio.checked) {
+                    additionalPrice = parseInt(radio.getAttribute('data-price'))
+                }
+            })
+            totalPriceElement.innerText = basePrice + additionalPrice + ' Kč'
+        }
+
+        function updateAddressVisibility() {
+            let requiresAddress = false
+            radioButtons.forEach(function(radio) {
+                if (radio.checked && radio.getAttribute('data-requires-address') === 'true') {
+                    requiresAddress = true
+                }
+            })
+
+            if (requiresAddress) {
+                addressField.style.display = 'block'
+            } else {
+                addressField.style.display = 'none'
+            }
+        }
+
+        radioButtons.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                updatePrice()
+                updateAddressVisibility()
+            })
+        })
+        updatePrice()
+        updateAddressVisibility()
+
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzn2mK5afVBcICVFjKCD1UMtmJ2v4HnGjt39y7i-7BkxcyjOoKe1UzFU8Pl2U_pYY-eKA/exec'
+        const form = document.forms['submit-to-google-sheet']
+
+        const modal = document.getElementById('modal')
+
+
+
+        /* form.addEventListener('submit', e => {
+            e.preventDefault()
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(response => {
+                const modal = document.getElementById('modal')
+                modal.style.display = 'block'
+
+                setTimeout(function() {
+                    modal.style.display = 'none'
+                }, 5000)
+
+                resetRadioButtons();
+
+                updateAddressVisibility();
+
+                form.reset()
+
+            })
+            .catch(error => console.error('Error!', error.message))
+        }) */
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            localStorage.setItem('formData', JSON.stringify(Object.fromEntries(formData.entries())));
+
+            // Определение суммы к оплате
+            const totalPrice = parseInt(totalPriceElement.innerText.replace(' Kč', ''));
+
+            // Создание сессии Stripe Checkout
+            fetch('/create-checkout-session', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    price: totalPrice, // Отправка текущей цены
+                    items: [{ /* информация о товаре или услуге */ }],
+                }),
+            })
+            .then(res => res.json())
+            .then(({ url }) => {
+                // Перенаправление на страницу оплаты Stripe
+                window.location.href = url;
+            })
+            .catch(error => console.error('Error!', error.message));
+        });
+
+
+        function resetRadioButtons() {
+            radioButtons.forEach(radio => {
+                radio.checked = radio.value === 'none'; 
+            });
+
+            totalPriceElement.innerText = basePrice + ' Kč';
+        }
+    </script>
+</body>
+</html>
